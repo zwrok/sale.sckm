@@ -8,121 +8,197 @@
 <style>
   :root {
     --bg: #0f0f0f;
-    --surface: #1a1a1a;
-    --surface2: #222;
+    --surface: #191919;
     --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.15);
+    --border2: rgba(255,255,255,0.16);
     --text: #f0ede8;
-    --muted: #888;
+    --muted: #777;
+    --muted2: #555;
     --green: #7ec87e;
-    --green-dim: rgba(126,200,126,0.13);
-    --red: #e05c5c;
+    --green-dim: rgba(126,200,126,0.12);
+    --red: #d95f5f;
     --accent: #c8b87e;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
   body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; }
 
+  /* ── HEADER ── */
   header {
     border-bottom: 1px solid var(--border);
-    padding: 2rem 2.5rem 1.5rem;
+    padding: 1.8rem 2.5rem 1.4rem;
     display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
   }
-  .logo-block h1 { font-size: clamp(1.6rem,4vw,2.4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-  .logo-block h1 span { color: var(--accent); }
-  .logo-block p { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
-  .header-note { background: var(--green-dim); border: 1px solid rgba(126,200,126,0.25); border-radius: 8px; padding: 10px 16px; font-size: 0.8rem; color: var(--green); max-width: 300px; line-height: 1.6; }
-  .header-note a { color: var(--accent); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--accent); }
-  .header-note a:hover { opacity: 0.8; }
-
-  nav { padding: 0.9rem 2.5rem; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--border); }
-  .tab-btn { font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
-  .tab-btn:hover { color: var(--text); border-color: var(--border2); }
-  .tab-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 500; }
-
-  main { padding: 2rem 2.5rem; }
-
-  .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 1.5rem; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  .ldot { width: 10px; height: 10px; border-radius: 2px; }
-
-  /* TIMELINE */
-  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-  .day-col { min-width: 0; }
-  .day-header-col { font-size: 0.78rem; font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 8px; text-align: center; }
-  .day-header-col span { display: block; font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
-  .room-bar-wrap { margin-bottom: 7px; }
-  .room-bar-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted); margin-bottom: 3px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bar-track { position: relative; height: 26px; background: var(--surface); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
-  .seg-busy { position: absolute; top: 2px; bottom: 2px; background: var(--red); border-radius: 3px; opacity: 0.8; cursor: default; transition: opacity 0.1s; }
-  .seg-busy:hover { opacity: 1; }
-  .seg-free { position: absolute; top: 2px; bottom: 2px; background: var(--green); border-radius: 3px; opacity: 0.18; }
-  .tick { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); }
-
-  .hour-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 4px; }
-  .hour-row-inner { position: relative; height: 14px; }
-  .hlabel { position: absolute; font-family: 'DM Mono', monospace; font-size: 0.52rem; color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
-
-  /* SLOTS */
-  #view-slots { display: none; }
-  .slots-week { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
-  .slot-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .slot-card-head { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .slot-card-day { font-weight: 700; font-size: 0.85rem; }
-  .slot-card-count { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--green); }
-  .slot-card-body { padding: 10px 14px; }
-  .rs { margin-bottom: 9px; }
-  .rs:last-child { margin-bottom: 0; }
-  .rs-lbl { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-  .rs-pills { display: flex; flex-wrap: wrap; gap: 4px; }
-  .pill { font-family: 'DM Mono', monospace; font-size: 0.66rem; padding: 2px 8px; border-radius: 4px; background: var(--green-dim); color: var(--green); border: 1px solid rgba(126,200,126,0.2); }
-  .pill-none { font-family: 'DM Mono', monospace; font-size: 0.66rem; color: var(--muted); opacity: 0.55; }
-
-  .tooltip { position: fixed; background: #1e1e1e; border: 1px solid var(--border2); border-radius: 6px; padding: 5px 10px; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text); pointer-events: none; z-index: 100; display: none; white-space: nowrap; }
-
-  footer { margin-top: 3rem; padding: 1.2rem 2.5rem; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-
-  @media (max-width: 1000px) {
-    .week-grid, .hour-row { grid-template-columns: repeat(4,1fr); }
+  .logo h1 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .logo h1 em { color: var(--accent); font-style: normal; }
+  .logo p { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .cta-box {
+    background: var(--green-dim);
+    border: 1px solid rgba(126,200,126,0.22);
+    border-radius: 8px; padding: 10px 16px;
+    font-size: 0.82rem; color: var(--green); max-width: 310px; line-height: 1.55;
   }
-  @media (max-width: 650px) {
-    header, nav, main, footer { padding-left: 1.2rem; padding-right: 1.2rem; }
-    .week-grid, .hour-row { grid-template-columns: repeat(2,1fr); }
+  .cta-box a {
+    color: var(--accent); font-weight: 700; text-decoration: none;
+    border-bottom: 1px solid rgba(200,184,126,0.5);
+  }
+  .cta-box a:hover { opacity: 0.8; }
+  .cta-box small { display: block; opacity: 0.65; margin-top: 3px; font-size: 0.75rem; }
+
+  /* ── LEGEND ── */
+  .legend-bar {
+    padding: 0.7rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 24px; align-items: center; flex-wrap: wrap;
+    font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted);
+  }
+  .li { display: flex; align-items: center; gap: 6px; }
+  .ldot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── MAIN GRID ── */
+  main { padding: 1.8rem 2.5rem 3rem; }
+
+  .week-wrap {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+  }
+
+  /* single day column */
+  .day-col { display: flex; flex-direction: column; gap: 0; }
+
+  .day-head {
+    text-align: center;
+    padding-bottom: 10px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .day-head .dshort { font-size: 0.9rem; font-weight: 700; }
+  .day-head .dfull  { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.04em; margin-top: 2px; }
+
+  /* room block = label + bar */
+  .room-block { margin-bottom: 10px; }
+  .room-block:last-child { margin-bottom: 0; }
+
+  .rlabel {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem; color: var(--muted);
+    margin-bottom: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* the bar itself */
+  .bar {
+    position: relative;
+    height: 36px;
+    background: var(--surface);
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  /* hour ticks inside bar */
+  .tick {
+    position: absolute; top: 0; bottom: 0; width: 1px;
+    background: rgba(255,255,255,0.05);
+    pointer-events: none;
+  }
+  /* every 3h tick slightly stronger */
+  .tick3 { background: rgba(255,255,255,0.10); }
+
+  /* busy segment */
+  .busy {
+    position: absolute; top: 3px; bottom: 3px;
+    background: var(--red);
+    border-radius: 3px;
+    opacity: 0.82;
+    cursor: default;
+    transition: opacity 0.1s;
+  }
+  .busy:hover { opacity: 1; }
+
+  /* free segment */
+  .free {
+    position: absolute; top: 3px; bottom: 3px;
+    background: var(--green);
+    border-radius: 3px;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  /* ── HOUR AXIS ── shared row below grid */
+  .axis-wrap {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+    margin-top: 5px;
+  }
+  .axis {
+    position: relative;
+    height: 18px;
+  }
+  .hlabel {
+    position: absolute;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.54rem; color: var(--muted2);
+    transform: translateX(-50%);
+    white-space: nowrap;
+    top: 0;
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip {
+    position: fixed; z-index: 200;
+    background: #1c1c1c; border: 1px solid var(--border2);
+    border-radius: 6px; padding: 5px 11px;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text);
+    pointer-events: none; display: none; white-space: nowrap;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 1rem 2.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted2);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .week-wrap, .axis-wrap { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 680px) {
+    header, .legend-bar, main, footer { padding-left: 1rem; padding-right: 1rem; }
+    .week-wrap, .axis-wrap { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 360px) {
+    .week-wrap, .axis-wrap { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo-block">
-    <h1>Dostępność <span>Sal</span></h1>
-    <p>SCKM — typowy rozkład tygodniowy</p>
+  <div class="logo">
+    <h1>Dostępność <em>Sal</em></h1>
+    <p>SCKM — rozkład tygodniowy</p>
   </div>
-  <div class="header-note">
-    Widzisz wolne okno? Złóż wniosek przez&nbsp;<a href="#" id="cal-link">formularz rezerwacji →</a><br>
-    <span style="opacity:0.7">Rezerwacja wymaga akceptacji.</span>
+  <div class="cta-box">
+    Widzisz wolne okno? Złóż wniosek rezerwacyjny:<br>
+    <a href="https://cal.com/wynajmy.sckm/sale" target="_blank">formularz rezerwacji →</a>
+    <small>Każda rezerwacja wymaga akceptacji.</small>
   </div>
 </header>
 
-<nav>
-  <button class="tab-btn active" onclick="setView('timeline',this)">Widok timeline</button>
-  <button class="tab-btn" onclick="setView('slots',this)">Wolne sloty</button>
-</nav>
+<div class="legend-bar">
+  <div class="li"><div class="ldot" style="background:var(--red)"></div>sala zajęta</div>
+  <div class="li"><div class="ldot" style="background:var(--green);opacity:0.55"></div>sala wolna</div>
+  <span style="margin-left:auto">Najedź kursorem na czerwony blok, żeby zobaczyć godziny</span>
+</div>
 
 <main>
-
-  <div id="view-timeline">
-    <div class="legend">
-      <div class="legend-item"><div class="ldot" style="background:var(--red)"></div>zajęta</div>
-      <div class="legend-item"><div class="ldot" style="background:var(--green);opacity:0.5"></div>wolna</div>
-    </div>
-    <div class="week-grid" id="week-grid"></div>
-    <div class="hour-row" id="hour-row"></div>
-  </div>
-
-  <div id="view-slots">
-    <div class="slots-week" id="slots-content"></div>
-  </div>
-
+  <div class="week-wrap" id="week-wrap"></div>
+  <div class="axis-wrap" id="axis-wrap"></div>
 </main>
 
 <footer>
@@ -133,28 +209,11 @@
 <div class="tooltip" id="tooltip"></div>
 
 <script>
-const DAYS = [
-  { key: 0, short: 'Pon',  full: 'Poniedziałek' },
-  { key: 1, short: 'Wt',   full: 'Wtorek' },
-  { key: 2, short: 'Śr',   full: 'Środa' },
-  { key: 3, short: 'Czw',  full: 'Czwartek' },
-  { key: 4, short: 'Pt',   full: 'Piątek' },
-  { key: 5, short: 'Sob',  full: 'Sobota' },
-  { key: 6, short: 'Nd',   full: 'Niedziela' },
-];
-
-const ROOMS = [
-  { key: 'baletowa',     label: 'Baletowa' },
-  { key: 'galeria',      label: 'Galeria 17' },
-  { key: 'gimnastyczna', label: 'Gimnastyczna' },
-  { key: 'teatralna',    label: 'Teatralna 78' },
-  { key: 'plastyczna',   label: 'Plastyczna 83/84' },
-];
-
-// ── DANE ────────────────────────────────────────────────────────────────────
-// Klucze: 0=pon, 1=wt, 2=śr, 3=czw, 4=pt, 5=sob, 6=nd
-// Format slotów: [godz_start, godz_koniec] — liczby dziesiętne, np. 9.5 = 9:30
-// Aby zmienić plan: edytuj te wartości i wgraj plik na nowo do GitHuba.
+// ─────────────────────────────────────────────────
+// KONFIGURACJA — edytuj te wartości gdy zmieni się plan zajęć
+// Klucze: 0=pon 1=wt 2=śr 3=czw 4=pt 5=sob 6=nd
+// Godziny jako liczby dziesiętne: 9.5 = 9:30, 16.25 = 16:15
+// ─────────────────────────────────────────────────
 const DATA = {
   baletowa: {
     0: [[16.5, 18]],
@@ -202,115 +261,118 @@ const DATA = {
     6: [],
   },
 };
-// ────────────────────────────────────────────────────────────────────────────
 
-const WS = 8, WE = 21;
-function toP(h) { return ((h - WS) / (WE - WS)) * 100; }
-function fmtH(h) {
-  const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+const ROOMS = [
+  { key: 'baletowa',     label: 'Baletowa' },
+  { key: 'galeria',      label: 'Galeria 17' },
+  { key: 'gimnastyczna', label: 'Gimnastyczna' },
+  { key: 'teatralna',    label: 'Teatralna p.78' },
+  { key: 'plastyczna',   label: 'Plastyczna 83/84' },
+];
+
+const DAYS = [
+  { short: 'Pon',  full: 'Poniedziałek', key: 0 },
+  { short: 'Wt',   full: 'Wtorek',       key: 1 },
+  { short: 'Śr',   full: 'Środa',        key: 2 },
+  { short: 'Czw',  full: 'Czwartek',     key: 3 },
+  { short: 'Pt',   full: 'Piątek',       key: 4 },
+  { short: 'Sob',  full: 'Sobota',       key: 5 },
+  { short: 'Nd',   full: 'Niedziela',    key: 6 },
+];
+
+const WS = 8, WE = 21; // zakres godzin na osi (8:00–21:00)
+
+function pct(h) { return ((h - WS) / (WE - WS)) * 100; }
+
+function fmt(h) {
+  const hh = Math.floor(h);
+  const mm = Math.round((h - hh) * 60);
   return hh + ':' + String(mm).padStart(2, '0');
 }
+
 function getFree(busy) {
-  const sorted = [...busy].sort((a,b) => a[0] - b[0]);
+  const s = [...busy].sort((a, b) => a[0] - b[0]);
   const free = []; let cur = WS;
-  for (const [s, e] of sorted) {
-    if (s > cur + 0.2) free.push([cur, s]);
-    cur = Math.max(cur, e);
+  for (const [a, b] of s) {
+    if (a > cur + 0.15) free.push([cur, a]);
+    cur = Math.max(cur, b);
   }
-  if (cur < WE - 0.2) free.push([cur, WE]);
+  if (cur < WE - 0.15) free.push([cur, WE]);
   return free;
 }
 
-const tooltip = document.getElementById('tooltip');
+// tooltip
+const tip = document.getElementById('tooltip');
 document.addEventListener('mousemove', e => {
-  tooltip.style.left = (e.clientX + 14) + 'px';
-  tooltip.style.top  = (e.clientY - 30) + 'px';
+  tip.style.left = (e.clientX + 14) + 'px';
+  tip.style.top  = (e.clientY - 34) + 'px';
 });
-function showTip(t) { tooltip.textContent = t; tooltip.style.display = 'block'; }
-function hideTip()  { tooltip.style.display = 'none'; }
 
-function renderTimeline() {
-  const grid = document.getElementById('week-grid');
-  const hourRow = document.getElementById('hour-row');
-  grid.innerHTML = '';
-  hourRow.innerHTML = '';
-
-  for (const d of DAYS) {
-    let html = `<div class="day-col">
-      <div class="day-header-col">${d.short}<span>${d.full}</span></div>`;
-
-    for (const r of ROOMS) {
-      const busy = DATA[r.key][d.key] || [];
-      const free = getFree(busy);
-      let segs = '';
-      for (let h = WS + 1; h < WE; h++) {
-        segs += `<div class="tick" style="left:${toP(h)}%"></div>`;
-      }
-      for (const [s, e] of free) {
-        segs += `<div class="seg-free" style="left:${toP(s)}%;width:${toP(e)-toP(s)}%"></div>`;
-      }
-      for (const [s, e] of busy) {
-        segs += `<div class="seg-busy"
-          style="left:${toP(s)}%;width:${toP(e)-toP(s)}%"
-          onmouseenter="showTip('${r.label} · ${fmtH(s)}–${fmtH(e)}')"
-          onmouseleave="hideTip()"></div>`;
-      }
-      html += `<div class="room-bar-wrap">
-        <div class="room-bar-label">${r.label}</div>
-        <div class="bar-track">${segs}</div>
-      </div>`;
-    }
-    html += '</div>';
-    grid.innerHTML += html;
-
-    let lbl = '<div class="hour-row-inner">';
-    for (let h = WS; h <= WE; h += 2) {
-      lbl += `<span class="hlabel" style="left:${toP(h)}%">${h}</span>`;
-    }
-    lbl += '</div>';
-    hourRow.innerHTML += lbl;
+// build hour ticks HTML (reused per bar)
+function ticksHTML() {
+  let h = '';
+  for (let i = WS + 1; i < WE; i++) {
+    const cls = (i % 3 === 0) ? 'tick tick3' : 'tick';
+    h += `<div class="${cls}" style="left:${pct(i)}%"></div>`;
   }
+  return h;
 }
+const TICKS = ticksHTML();
 
-function renderSlots() {
-  let html = '';
-  for (const d of DAYS) {
-    let roomsHtml = '';
-    let totalFree = 0;
-    for (const r of ROOMS) {
-      const free = getFree(DATA[r.key][d.key] || []);
-      totalFree += free.length;
-      const pills = free.length
-        ? free.map(([s, e]) => `<span class="pill">${fmtH(s)}–${fmtH(e)}</span>`).join('')
-        : '<span class="pill-none">brak wolnych</span>';
-      roomsHtml += `<div class="rs">
-        <div class="rs-lbl">${r.label}</div>
-        <div class="rs-pills">${pills}</div>
-      </div>`;
+// build axis labels HTML (reused per column)
+function axisHTML() {
+  let h = '';
+  for (let i = WS; i <= WE; i += 2) {
+    h += `<span class="hlabel" style="left:${pct(i)}%">${i}:00</span>`;
+  }
+  return h;
+}
+const AXIS = axisHTML();
+
+// render
+const weekWrap = document.getElementById('week-wrap');
+const axisWrap = document.getElementById('axis-wrap');
+
+for (const d of DAYS) {
+  let roomsHTML = '';
+
+  for (const r of ROOMS) {
+    const busy = DATA[r.key][d.key] || [];
+    const free = getFree(busy);
+
+    let segs = TICKS;
+
+    for (const [s, e] of free) {
+      segs += `<div class="free" style="left:${pct(s)}%;width:${pct(e)-pct(s)}%"></div>`;
     }
-    html += `<div class="slot-card">
-      <div class="slot-card-head">
-        <span class="slot-card-day">${d.full}</span>
-        <span class="slot-card-count">${totalFree} slotów</span>
-      </div>
-      <div class="slot-card-body">${roomsHtml}</div>
+    for (const [s, e] of busy) {
+      const tip_txt = `${r.label}  ${fmt(s)} – ${fmt(e)}`;
+      segs += `<div class="busy"
+        style="left:${pct(s)}%;width:${pct(e)-pct(s)}%"
+        onmouseenter="tip.textContent='${tip_txt}';tip.style.display='block'"
+        onmouseleave="tip.style.display='none'"></div>`;
+    }
+
+    roomsHTML += `<div class="room-block">
+      <div class="rlabel">${r.label}</div>
+      <div class="bar">${segs}</div>
     </div>`;
   }
-  document.getElementById('slots-content').innerHTML = html;
+
+  weekWrap.innerHTML += `<div class="day-col">
+    <div class="day-head">
+      <div class="dshort">${d.short}</div>
+      <div class="dfull">${d.full}</div>
+    </div>
+    ${roomsHTML}
+  </div>`;
+
+  axisWrap.innerHTML += `<div class="axis">${AXIS}</div>`;
 }
 
-function setView(v, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('view-timeline').style.display = v === 'timeline' ? '' : 'none';
-  document.getElementById('view-slots').style.display   = v === 'slots'    ? '' : 'none';
-}
-
+// footer date
 document.getElementById('update-date').textContent =
   'Aktualizacja: ' + new Date().toLocaleDateString('pl-PL', { day: '2-digit', month: 'long', year: 'numeric' });
-
-renderTimeline();
-renderSlots();
 </script>
 </body>
 </html>
