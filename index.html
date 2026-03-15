@@ -8,171 +8,124 @@
 <style>
   :root {
     --bg: #0f0f0f;
-    --surface: #191919;
+    --surface: #1a1a1a;
     --border: rgba(255,255,255,0.08);
     --border2: rgba(255,255,255,0.16);
     --text: #f0ede8;
     --muted: #777;
-    --muted2: #555;
+    --muted2: #444;
     --green: #7ec87e;
     --green-dim: rgba(126,200,126,0.12);
     --red: #d95f5f;
     --accent: #c8b87e;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 14px; }
   body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; }
 
-  /* ── HEADER ── */
   header {
     border-bottom: 1px solid var(--border);
-    padding: 1.8rem 2.5rem 1.4rem;
+    padding: 1.6rem 2rem 1.3rem;
     display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
   }
-  .logo h1 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .logo h1 { font-size: clamp(1.4rem,3.5vw,2.1rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
   .logo h1 em { color: var(--accent); font-style: normal; }
-  .logo p { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .logo p { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-top: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
+
   .cta-box {
     background: var(--green-dim);
     border: 1px solid rgba(126,200,126,0.22);
     border-radius: 8px; padding: 10px 16px;
-    font-size: 0.82rem; color: var(--green); max-width: 310px; line-height: 1.55;
+    font-size: 0.8rem; color: var(--green); max-width: 300px; line-height: 1.6;
   }
-  .cta-box a {
-    color: var(--accent); font-weight: 700; text-decoration: none;
-    border-bottom: 1px solid rgba(200,184,126,0.5);
-  }
+  .cta-box a { color: var(--accent); font-weight: 700; text-decoration: none; border-bottom: 1px solid rgba(200,184,126,0.5); }
   .cta-box a:hover { opacity: 0.8; }
-  .cta-box small { display: block; opacity: 0.65; margin-top: 3px; font-size: 0.75rem; }
+  .cta-box small { display: block; opacity: 0.6; margin-top: 2px; font-size: 0.7rem; }
 
-  /* ── LEGEND ── */
   .legend-bar {
-    padding: 0.7rem 2.5rem;
+    padding: 0.6rem 2rem;
     border-bottom: 1px solid var(--border);
-    display: flex; gap: 24px; align-items: center; flex-wrap: wrap;
-    font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted);
+    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted);
   }
-  .li { display: flex; align-items: center; gap: 6px; }
-  .ldot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+  .li { display: flex; align-items: center; gap: 5px; }
+  .ldot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .legend-bar span:last-child { margin-left: auto; font-size: 0.6rem; opacity: 0.6; }
 
-  /* ── MAIN GRID ── */
-  main { padding: 1.8rem 2.5rem 3rem; }
+  /* ── MAIN ── */
+  main { padding: 1.5rem 2rem 3rem; }
 
-  .week-wrap {
+  /* Each day = heading + table of [label | bar] + one axis row */
+  .day-section { margin-bottom: 2.2rem; }
+
+  .day-heading {
+    display: flex; align-items: baseline; gap: 10px;
+    padding-bottom: 8px; margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .day-short { font-size: 1rem; font-weight: 700; }
+  .day-full  { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); }
+
+  /* row = label + bar, using CSS grid so label width is fixed and bar fills rest */
+  .row {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 14px;
+    grid-template-columns: 130px 1fr;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
   }
-
-  /* single day column */
-  .day-col { display: flex; flex-direction: column; gap: 0; }
-
-  .day-head {
-    text-align: center;
-    padding-bottom: 10px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
-  .day-head .dshort { font-size: 0.9rem; font-weight: 700; }
-  .day-head .dfull  { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.04em; margin-top: 2px; }
-
-  /* room block = label + bar */
-  .room-block { margin-bottom: 10px; }
-  .room-block:last-child { margin-bottom: 0; }
-
   .rlabel {
     font-family: 'DM Mono', monospace;
-    font-size: 0.6rem; color: var(--muted);
-    margin-bottom: 4px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-size: 0.64rem; color: var(--muted);
+    line-height: 1.3; text-align: right;
+    padding-right: 4px;
   }
 
-  /* the bar itself */
+  /* the bar */
   .bar {
-    position: relative;
-    height: 36px;
+    position: relative; height: 34px;
     background: var(--surface);
     border-radius: 5px;
     border: 1px solid var(--border);
     overflow: hidden;
   }
+  .tick  { position: absolute; top:0; bottom:0; width:1px; background: rgba(255,255,255,0.05); pointer-events:none; }
+  .tick3 { background: rgba(255,255,255,0.11); }
+  .busy  { position: absolute; top:3px; bottom:3px; background: var(--red); border-radius:3px; opacity:0.82; cursor:default; transition: opacity .1s; }
+  .busy:hover { opacity:1; }
+  .fseg  { position: absolute; top:3px; bottom:3px; background: var(--green); border-radius:3px; opacity:0.16; pointer-events:none; }
 
-  /* hour ticks inside bar */
-  .tick {
-    position: absolute; top: 0; bottom: 0; width: 1px;
-    background: rgba(255,255,255,0.05);
-    pointer-events: none;
-  }
-  /* every 3h tick slightly stronger */
-  .tick3 { background: rgba(255,255,255,0.10); }
-
-  /* busy segment */
-  .busy {
-    position: absolute; top: 3px; bottom: 3px;
-    background: var(--red);
-    border-radius: 3px;
-    opacity: 0.82;
-    cursor: default;
-    transition: opacity 0.1s;
-  }
-  .busy:hover { opacity: 1; }
-
-  /* free segment */
-  .free {
-    position: absolute; top: 3px; bottom: 3px;
-    background: var(--green);
-    border-radius: 3px;
-    opacity: 0.18;
-    pointer-events: none;
-  }
-
-  /* ── HOUR AXIS ── shared row below grid */
-  .axis-wrap {
+  /* axis row — label column empty, axis fills the bar column */
+  .axis-row {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 14px;
-    margin-top: 5px;
+    grid-template-columns: 130px 1fr;
+    gap: 10px;
+    margin-top: 3px;
   }
   .axis {
-    position: relative;
-    height: 18px;
+    position: relative; height: 18px;
   }
   .hlabel {
     position: absolute;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.54rem; color: var(--muted2);
-    transform: translateX(-50%);
-    white-space: nowrap;
-    top: 0;
+    font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted2);
+    transform: translateX(-50%); white-space: nowrap; top: 0;
+    /* clamp left/right so first and last labels don't overflow */
   }
+  /* prevent first label from going left of axis */
+  .hlabel:first-child  { transform: translateX(0); }
+  /* prevent last label from going right of axis */
+  .hlabel:last-child   { transform: translateX(-100%); }
 
-  /* ── TOOLTIP ── */
-  .tooltip {
-    position: fixed; z-index: 200;
-    background: #1c1c1c; border: 1px solid var(--border2);
-    border-radius: 6px; padding: 5px 11px;
-    font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text);
-    pointer-events: none; display: none; white-space: nowrap;
-  }
+  /* tooltip */
+  .tt { position:fixed; z-index:200; background:#1c1c1c; border:1px solid var(--border2); border-radius:6px; padding:5px 11px; font-family:'DM Mono',monospace; font-size:0.72rem; color:var(--text); pointer-events:none; display:none; white-space:nowrap; }
 
-  /* ── FOOTER ── */
-  footer {
-    padding: 1rem 2.5rem;
-    border-top: 1px solid var(--border);
-    font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted2);
-    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;
-  }
+  footer { padding: 1rem 2rem; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted2); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
 
-  /* ── RESPONSIVE ── */
-  @media (max-width: 1100px) {
-    .week-wrap, .axis-wrap { grid-template-columns: repeat(4, 1fr); }
-  }
-  @media (max-width: 680px) {
+  @media (max-width: 520px) {
     header, .legend-bar, main, footer { padding-left: 1rem; padding-right: 1rem; }
-    .week-wrap, .axis-wrap { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 360px) {
-    .week-wrap, .axis-wrap { grid-template-columns: 1fr; }
+    .row, .axis-row { grid-template-columns: 80px 1fr; gap: 6px; }
+    .rlabel { font-size: 0.56rem; }
+    .hlabel { font-size: 0.5rem; }
+    .bar { height: 28px; }
   }
 </style>
 </head>
@@ -192,28 +145,24 @@
 
 <div class="legend-bar">
   <div class="li"><div class="ldot" style="background:var(--red)"></div>sala zajęta</div>
-  <div class="li"><div class="ldot" style="background:var(--green);opacity:0.55"></div>sala wolna</div>
-  <span style="margin-left:auto">Najedź kursorem na czerwony blok, żeby zobaczyć godziny</span>
+  <div class="li"><div class="ldot" style="background:var(--green);opacity:0.5"></div>sala wolna</div>
+  <span>najedź na blok aby zobaczyć godziny</span>
 </div>
 
-<main>
-  <div class="week-wrap" id="week-wrap"></div>
-  <div class="axis-wrap" id="axis-wrap"></div>
-</main>
+<main id="main"></main>
 
 <footer>
   <span>Dane: Zajętość Wszystkich Sal · aktualizacja ręczna</span>
-  <span id="update-date"></span>
+  <span id="fdate"></span>
 </footer>
 
-<div class="tooltip" id="tooltip"></div>
+<div class="tt" id="tt"></div>
 
 <script>
-// ─────────────────────────────────────────────────
-// KONFIGURACJA — edytuj te wartości gdy zmieni się plan zajęć
+// ── DANE ─────────────────────────────────────────────────────────────────────
 // Klucze: 0=pon 1=wt 2=śr 3=czw 4=pt 5=sob 6=nd
-// Godziny jako liczby dziesiętne: 9.5 = 9:30, 16.25 = 16:15
-// ─────────────────────────────────────────────────
+// Godziny: liczby dziesiętne — 9.5 = 9:30, 16.25 = 16:15
+// Aby zmienić plan zajęć — edytuj poniższe tablice i wgraj plik ponownie.
 const DATA = {
   baletowa: {
     0: [[16.5, 18]],
@@ -271,108 +220,102 @@ const ROOMS = [
 ];
 
 const DAYS = [
-  { short: 'Pon',  full: 'Poniedziałek', key: 0 },
-  { short: 'Wt',   full: 'Wtorek',       key: 1 },
-  { short: 'Śr',   full: 'Środa',        key: 2 },
-  { short: 'Czw',  full: 'Czwartek',     key: 3 },
-  { short: 'Pt',   full: 'Piątek',       key: 4 },
-  { short: 'Sob',  full: 'Sobota',       key: 5 },
-  { short: 'Nd',   full: 'Niedziela',    key: 6 },
+  { key:0, short:'Pon', full:'Poniedziałek' },
+  { key:1, short:'Wt',  full:'Wtorek' },
+  { key:2, short:'Śr',  full:'Środa' },
+  { key:3, short:'Czw', full:'Czwartek' },
+  { key:4, short:'Pt',  full:'Piątek' },
+  { key:5, short:'Sob', full:'Sobota' },
+  { key:6, short:'Nd',  full:'Niedziela' },
 ];
 
-const WS = 8, WE = 21; // zakres godzin na osi (8:00–21:00)
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const WS = 8, WE = 21;
+const SPAN = WE - WS;
 
-function pct(h) { return ((h - WS) / (WE - WS)) * 100; }
-
+function p(h) { return ((h - WS) / SPAN * 100).toFixed(3) + '%'; }
+function w(s, e) { return ((e - s) / SPAN * 100).toFixed(3) + '%'; }
 function fmt(h) {
-  const hh = Math.floor(h);
-  const mm = Math.round((h - hh) * 60);
+  const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
   return hh + ':' + String(mm).padStart(2, '0');
 }
-
 function getFree(busy) {
-  const s = [...busy].sort((a, b) => a[0] - b[0]);
-  const free = []; let cur = WS;
-  for (const [a, b] of s) {
-    if (a > cur + 0.15) free.push([cur, a]);
-    cur = Math.max(cur, b);
-  }
-  if (cur < WE - 0.15) free.push([cur, WE]);
-  return free;
+  const s = [...busy].sort((a,b) => a[0]-b[0]);
+  const out = []; let cur = WS;
+  for (const [a,b] of s) { if (a > cur+0.15) out.push([cur,a]); cur = Math.max(cur,b); }
+  if (cur < WE-0.15) out.push([cur, WE]);
+  return out;
 }
 
-// tooltip
-const tip = document.getElementById('tooltip');
+// ── TICKS (reused) ────────────────────────────────────────────────────────────
+let ticksHTML = '';
+for (let h = WS+1; h < WE; h++) {
+  ticksHTML += `<div class="tick${h%3===0?' tick3':''}" style="left:${p(h)}"></div>`;
+}
+
+// ── AXIS (reused) ─────────────────────────────────────────────────────────────
+// Build labels at 8,10,12,14,16,18,20 — first/last get special CSS treatment
+const axisHours = [];
+for (let h = WS; h <= WE; h += 2) axisHours.push(h);
+let axisHTML = '';
+for (let i = 0; i < axisHours.length; i++) {
+  const h = axisHours[i];
+  let extra = '';
+  if (i === 0) extra = ' style="transform:translateX(0)"';
+  else if (i === axisHours.length-1) extra = ' style="transform:translateX(-100%)"';
+  axisHTML += `<span class="hlabel"${extra} style="left:${p(h)}">${h}:00</span>`;
+}
+
+// ── TOOLTIP ────────────────────────────────────────────────────────────────────
+const tt = document.getElementById('tt');
 document.addEventListener('mousemove', e => {
-  tip.style.left = (e.clientX + 14) + 'px';
-  tip.style.top  = (e.clientY - 34) + 'px';
+  tt.style.left = (e.clientX + 14) + 'px';
+  tt.style.top  = (e.clientY - 36) + 'px';
 });
 
-// build hour ticks HTML (reused per bar)
-function ticksHTML() {
-  let h = '';
-  for (let i = WS + 1; i < WE; i++) {
-    const cls = (i % 3 === 0) ? 'tick tick3' : 'tick';
-    h += `<div class="${cls}" style="left:${pct(i)}%"></div>`;
-  }
-  return h;
-}
-const TICKS = ticksHTML();
-
-// build axis labels HTML (reused per column)
-function axisHTML() {
-  let h = '';
-  for (let i = WS; i <= WE; i += 2) {
-    h += `<span class="hlabel" style="left:${pct(i)}%">${i}:00</span>`;
-  }
-  return h;
-}
-const AXIS = axisHTML();
-
-// render
-const weekWrap = document.getElementById('week-wrap');
-const axisWrap = document.getElementById('axis-wrap');
+// ── RENDER ─────────────────────────────────────────────────────────────────────
+const main = document.getElementById('main');
+let html = '';
 
 for (const d of DAYS) {
-  let roomsHTML = '';
+  html += `<div class="day-section">
+    <div class="day-heading">
+      <span class="day-short">${d.short}</span>
+      <span class="day-full">${d.full}</span>
+    </div>`;
 
   for (const r of ROOMS) {
     const busy = DATA[r.key][d.key] || [];
     const free = getFree(busy);
 
-    let segs = TICKS;
-
-    for (const [s, e] of free) {
-      segs += `<div class="free" style="left:${pct(s)}%;width:${pct(e)-pct(s)}%"></div>`;
-    }
-    for (const [s, e] of busy) {
-      const tip_txt = `${r.label}  ${fmt(s)} – ${fmt(e)}`;
-      segs += `<div class="busy"
-        style="left:${pct(s)}%;width:${pct(e)-pct(s)}%"
-        onmouseenter="tip.textContent='${tip_txt}';tip.style.display='block'"
-        onmouseleave="tip.style.display='none'"></div>`;
+    let segs = ticksHTML;
+    for (const [s,e] of free)
+      segs += `<div class="fseg" style="left:${p(s)};width:${w(s,e)}"></div>`;
+    for (const [s,e] of busy) {
+      const label = `${r.label}  ${fmt(s)} – ${fmt(e)}`;
+      segs += `<div class="busy" style="left:${p(s)};width:${w(s,e)}"
+        onmouseenter="tt.textContent='${label}';tt.style.display='block'"
+        onmouseleave="tt.style.display='none'"></div>`;
     }
 
-    roomsHTML += `<div class="room-block">
+    html += `<div class="row">
       <div class="rlabel">${r.label}</div>
       <div class="bar">${segs}</div>
     </div>`;
   }
 
-  weekWrap.innerHTML += `<div class="day-col">
-    <div class="day-head">
-      <div class="dshort">${d.short}</div>
-      <div class="dfull">${d.full}</div>
-    </div>
-    ${roomsHTML}
+  // one axis per day, aligned with the bar column
+  html += `<div class="axis-row">
+    <div></div>
+    <div class="axis">${axisHTML}</div>
   </div>`;
 
-  axisWrap.innerHTML += `<div class="axis">${AXIS}</div>`;
+  html += `</div>`;
 }
 
-// footer date
-document.getElementById('update-date').textContent =
-  'Aktualizacja: ' + new Date().toLocaleDateString('pl-PL', { day: '2-digit', month: 'long', year: 'numeric' });
+main.innerHTML = html;
+document.getElementById('fdate').textContent =
+  'Aktualizacja: ' + new Date().toLocaleDateString('pl-PL', {day:'2-digit', month:'long', year:'numeric'});
 </script>
 </body>
 </html>
