@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dostępność Sal — SCKM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #222;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #f0ede8;
+    --muted: #888;
+    --green: #7ec87e;
+    --green-dim: rgba(126,200,126,0.15);
+    --red: #e05c5c;
+    --red-dim: rgba(224,92,92,0.15);
+    --accent: #c8b87e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .logo-block h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .logo-block h1 span { color: var(--accent); }
+  .logo-block p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .header-note {
+    background: var(--green-dim);
+    border: 1px solid rgba(126,200,126,0.3);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    color: var(--green);
+    max-width: 280px;
+    line-height: 1.5;
+  }
+  .header-note a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
+  }
+  .header-note a:hover { opacity: 0.8; }
+
+  /* NAV */
+  nav {
+    padding: 1rem 2.5rem;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .week-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .week-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .week-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 500; }
+  .tab-btns { margin-left: auto; display: flex; gap: 6px; }
+  .tab-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .tab-btn:hover { color: var(--text); border-color: var(--border2); }
+  .tab-btn.active { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+
+  /* MAIN */
+  main { padding: 2rem 2.5rem; }
+
+  /* TIMELINE VIEW */
+  #view-timeline {}
+  .day-section { margin-bottom: 2.5rem; }
+  .day-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 1rem;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .day-name { font-size: 1.1rem; font-weight: 700; }
+  .day-date { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); }
+  .free-count {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(126,200,126,0.2);
+  }
+
+  .room-row {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .room-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+  .timeline-bar {
+    position: relative;
+    height: 32px;
+    background: var(--surface);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .time-axis {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    pointer-events: none;
+  }
+  .time-tick {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .busy-seg {
+    position: absolute;
+    top: 3px; bottom: 3px;
+    background: var(--red);
+    border-radius: 4px;
+    opacity: 0.85;
+    cursor: default;
+  }
+  .free-seg {
+    position: absolute;
+    top: 3px; bottom: 3px;
+    background: var(--green);
+    border-radius: 4px;
+    opacity: 0.25;
+  }
+  .busy-seg:hover { opacity: 1; }
+
+  /* Hour labels row */
+  .hour-labels {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    margin-top: -4px;
+  }
+  .hour-labels-bar {
+    position: relative;
+    height: 16px;
+  }
+  .hour-label {
+    position: absolute;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    transform: translateX(-50%);
+  }
+
+  /* SLOTS VIEW */
+  #view-slots { display: none; }
+  .slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .slot-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .slot-card:hover { border-color: var(--border2); }
+  .slot-card-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .slot-card-day { font-weight: 700; font-size: 0.9rem; }
+  .slot-card-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+  .slot-card-body { padding: 12px 16px; }
+  .room-slots { margin-bottom: 10px; }
+  .room-slots:last-child { margin-bottom: 0; }
+  .rs-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+  .rs-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(126,200,126,0.2);
+  }
+  .pill-none { color: var(--red); font-family: 'DM Mono', monospace; font-size: 0.7rem; opacity: 0.6; }
+
+  /* BEST VIEW */
+  #view-best { display: none; }
+  .best-intro {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .best-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .best-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .best-card:hover { border-color: var(--border2); }
+  .best-card.top { border-color: var(--accent); }
+  .best-card-header {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .best-time { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
+  .best-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(200,184,126,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(200,184,126,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .best-bar-wrap { padding: 10px 16px 4px; }
+  .best-bar-bg { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .best-bar-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.4s ease; }
+  .best-body { padding: 10px 16px 14px; }
+  .best-day-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .best-day-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.67rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+  }
+  .best-day-chip.good { background: var(--green-dim); color: var(--green); border-color: rgba(126,200,126,0.25); }
+  .best-day-chip .rooms-n { font-weight: 600; }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .ldot { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* FOOTER */
+  footer {
+    margin-top: 4rem;
+    padding: 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* TOOLTIP */
+  .tooltip {
+    position: fixed;
+    background: #1e1e1e;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text);
+    pointer-events: none;
+    z-index: 100;
+    display: none;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    header, nav, main, footer { padding-left: 1.2rem; padding-right: 1.2rem; }
+    .room-row { grid-template-columns: 120px 1fr; }
+    .hour-labels { grid-template-columns: 120px 1fr; }
+    .tab-btns { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-block">
+    <h1>Dostępność <span>Sal</span></h1>
+    <p>SCKM — Podgląd zajętości / marzec 2026</p>
+  </div>
+  <div class="header-note">
+    Widzisz wolne okno? Złóż wniosek rezerwacyjny przez&nbsp;<a href="#" id="cal-link">formularz →</a><br>
+    <span style="opacity:0.7">Rezerwacja wymaga akceptacji.</span>
+  </div>
+</header>
+
+<nav>
+  <button class="week-btn active" onclick="setWeek(0)">16–21 marca</button>
+  <button class="week-btn" onclick="setWeek(1)">23–27 marca</button>
+  <div class="tab-btns">
+    <button class="tab-btn active" onclick="setView('timeline')">Timeline</button>
+    <button class="tab-btn" onclick="setView('slots')">Wolne sloty</button>
+    <button class="tab-btn" onclick="setView('best')">Najlepsze okna</button>
+  </div>
+</nav>
+
+<main>
+
+<div id="view-timeline">
+  <div class="legend">
+    <div class="legend-item"><div class="ldot" style="background:var(--red)"></div>zajęta</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--green);opacity:0.5"></div>wolna</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--surface);border:1px solid var(--border)"></div>poza godz. pracy</div>
+  </div>
+  <div id="timeline-content"></div>
+</div>
+
+<div id="view-slots">
+  <div id="slots-content" class="slots-grid"></div>
+</div>
+
+<div id="view-best">
+  <p class="best-intro">Przedziały 1,5–2h, w których największa liczba sal jest jednocześnie wolna — przez cały badany okres (16–27 marca). Idealne do planowania zajęć cyklicznych.</p>
+  <div id="best-content" class="best-grid"></div>
+</div>
+
+</main>
+
+<footer>
+  <span>Dane: kalendarz „Zajętość Wszystkich Sal" · aktualizacja ręczna</span>
+  <span id="update-date"></span>
+</footer>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const ROOMS = [
+  { key: 'baletowa',    label: 'Baletowa\nIV p. 90' },
+  { key: 'galeria',     label: 'Galeria 17' },
+  { key: 'gimnastyczna',label: 'Gimnastyczna\n34' },
+  { key: 'teatralna',   label: 'Teatralna\nIV p. 78' },
+  { key: 'plastyczna',  label: 'Plastyczna\n83/84' },
+];
+
+const WEEKS = [
+  [
+    { date: '16.03', dow: 'Poniedziałek', iso: '2026-03-16' },
+    { date: '17.03', dow: 'Wtorek',       iso: '2026-03-17' },
+    { date: '18.03', dow: 'Środa',        iso: '2026-03-18' },
+    { date: '19.03', dow: 'Czwartek',     iso: '2026-03-19' },
+    { date: '20.03', dow: 'Piątek',       iso: '2026-03-20' },
+    { date: '21.03', dow: 'Sobota',       iso: '2026-03-21' },
+  ],
+  [
+    { date: '23.03', dow: 'Poniedziałek', iso: '2026-03-23' },
+    { date: '24.03', dow: 'Wtorek',       iso: '2026-03-24' },
+    { date: '25.03', dow: 'Środa',        iso: '2026-03-25' },
+    { date: '26.03', dow: 'Czwartek',     iso: '2026-03-26' },
+    { date: '27.03', dow: 'Piątek',       iso: '2026-03-27' },
+  ],
+];
+
+// ── DANE ── edytuj poniższy obiekt gdy zmienią się godziny
+const DATA = {
+  baletowa: {
+    '16.03': [[16.5,18]],
+    '17.03': [[9.5,11.5]],
+    '18.03': [[9.5,11.5]],
+    '19.03': [[9.5,11.5]],
+    '20.03': [[15.5,20.5]],
+    '21.03': [[11,12.5]],
+    '23.03': [[16.5,18]],
+    '24.03': [[9.5,11.5]],
+    '25.03': [[9.5,11.5]],
+    '26.03': [[9.5,11.5]],
+    '27.03': [[15.5,20.5]],
+  },
+  galeria: {
+    '16.03': [[9,11.25]],
+    '17.03': [[9,11.25]],
+    '18.03': [[9,11.25],[16.5,19]],
+    '19.03': [[17.5,19.75]],
+    '20.03': [[10,11.5]],
+    '21.03': [[10,15.25]],
+    '23.03': [[9,11.25]],
+    '24.03': [[9,11.25]],
+    '25.03': [[9,11.25],[16.5,19]],
+    '26.03': [[17.5,19.75]],
+    '27.03': [[10,11.5]],
+  },
+  gimnastyczna: {
+    '16.03': [[15,16.5]],
+    '17.03': [[16.5,18]],
+    '18.03': [[16.5,20.25]],
+    '19.03': [[15,21]],
+    '20.03': [[10,11.5]],
+    '21.03': [[9,12]],
+    '23.03': [[15,16.5]],
+    '24.03': [[16.5,18]],
+    '25.03': [[16.5,20.25]],
+    '26.03': [[15,21]],
+    '27.03': [[10,11.5]],
+  },
+  teatralna: {
+    '16.03': [[9,12]],
+    '17.03': [[9,12]],
+    '18.03': [[9.5,10.25]],
+    '19.03': [[10,11.5]],
+    '20.03': [[10,11.5]],
+    '23.03': [[9,12]],
+    '24.03': [[9,12]],
+    '25.03': [[9.5,10.25]],
+    '26.03': [[10,11.5]],
+    '27.03': [[10,11.5]],
+  },
+  plastyczna: {
+    '16.03': [[8,11],[16.5,19.5]],
+    '17.03': [[8.5,11.5],[15.5,19.5]],
+    '18.03': [[8.5,14.5],[15.5,17.75]],
+    '19.03': [[16.5,20]],
+    '20.03': [[15.5,18]],
+    '23.03': [[8,11],[16.5,19.5]],
+    '24.03': [[8.5,11.5],[15.5,19.5]],
+    '25.03': [[8.5,14.5],[15.5,17.75]],
+    '26.03': [[16.5,20]],
+    '27.03': [[15.5,18]],
+  },
+};
+
+const WS = 8, WE = 21;
+
+function toP(h) { return ((h - WS) / (WE - WS)) * 100; }
+function fmtH(h) {
+  const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+  return hh + ':' + String(mm).padStart(2,'0');
+}
+function getFree(busy, s=WS, e=WE) {
+  const sorted = [...busy].sort((a,b)=>a[0]-b[0]);
+  const free = []; let cur = s;
+  for (const [bs,be] of sorted) {
+    if (bs > cur + 0.2) free.push([cur, bs]);
+    cur = Math.max(cur, be);
+  }
+  if (cur < e - 0.2) free.push([cur, e]);
+  return free;
+}
+
+let currentWeek = 0;
+let currentView = 'timeline';
+
+function setWeek(w) {
+  currentWeek = w;
+  document.querySelectorAll('.week-btn').forEach((b,i) => b.classList.toggle('active', i===w));
+  render();
+}
+
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('view-timeline').style.display = v==='timeline' ? '' : 'none';
+  document.getElementById('view-slots').style.display = v==='slots' ? '' : 'none';
+  document.getElementById('view-best').style.display = v==='best' ? '' : 'none';
+  render();
+}
+
+const tooltip = document.getElementById('tooltip');
+document.addEventListener('mousemove', e => {
+  tooltip.style.left = (e.clientX + 14) + 'px';
+  tooltip.style.top = (e.clientY - 28) + 'px';
+});
+
+function showTip(txt) { tooltip.textContent = txt; tooltip.style.display = 'block'; }
+function hideTip() { tooltip.style.display = 'none'; }
+
+function renderTimeline() {
+  const days = WEEKS[currentWeek];
+  let html = '';
+
+  // Hour labels once
+  html += '<div class="hour-labels"><div></div><div class="hour-labels-bar">';
+  for (let h = WS; h <= WE; h += 1) {
+    html += `<span class="hour-label" style="left:${toP(h)}%">${h}:00</span>`;
+  }
+  html += '</div></div>';
+
+  for (const d of days) {
+    const freeTotal = ROOMS.reduce((acc, r) => acc + getFree(DATA[r.key][d.date]||[]).length, 0);
+    html += `<div class="day-section">
+      <div class="day-heading">
+        <span class="day-name">${d.dow}</span>
+        <span class="day-date">${d.date}</span>
+        <span class="free-count">${freeTotal} wolnych slotów</span>
+      </div>`;
+
+    for (const r of ROOMS) {
+      const busy = DATA[r.key][d.date] || [];
+      const free = getFree(busy);
+      const labelHtml = r.label.replace('\n','<br>');
+
+      let segs = '';
+      // hour ticks
+      for (let h = WS+1; h < WE; h++) {
+        segs += `<div class="time-tick" style="left:${toP(h)}%"></div>`;
+      }
+      // free segments (dim)
+      for (const [s,e] of free) {
+        segs += `<div class="free-seg" style="left:${toP(s)}%;width:${toP(e)-toP(s)}%"></div>`;
+      }
+      // busy segments
+      for (const [s,e] of busy) {
+        segs += `<div class="busy-seg" 
+          style="left:${toP(s)}%;width:${toP(e)-toP(s)}%"
+          onmouseenter="showTip('${r.label.replace('\n',' ')} · zajęta ${fmtH(s)}–${fmtH(e)}')"
+          onmouseleave="hideTip()"></div>`;
+      }
+
+      html += `<div class="room-row">
+        <div class="room-label">${labelHtml}</div>
+        <div class="timeline-bar">${segs}</div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+  document.getElementById('timeline-content').innerHTML = html;
+}
+
+function renderSlots() {
+  const days = WEEKS[currentWeek];
+  let html = '';
+  for (const d of days) {
+    let roomsHtml = '';
+    for (const r of ROOMS) {
+      const free = getFree(DATA[r.key][d.date]||[]);
+      const pillsHtml = free.length
+        ? free.map(([s,e]) => `<span class="pill">${fmtH(s)}–${fmtH(e)}</span>`).join('')
+        : '<span class="pill-none">brak wolnych</span>';
+      roomsHtml += `<div class="room-slots">
+        <div class="rs-label">${r.label.replace('\n',' ')}</div>
+        <div class="rs-pills">${pillsHtml}</div>
+      </div>`;
+    }
+    html += `<div class="slot-card">
+      <div class="slot-card-header">
+        <span class="slot-card-day">${d.dow}</span>
+        <span class="slot-card-date">${d.date}</span>
+      </div>
+      <div class="slot-card-body">${roomsHtml}</div>
+    </div>`;
+  }
+  document.getElementById('slots-content').innerHTML = html;
+}
+
+function renderBest() {
+  const allDays = [...WEEKS[0], ...WEEKS[1]];
+  const windows = [];
+  for (let h = WS; h <= WE - 1.5; h += 0.5) {
+    const end = h + 1.5;
+    if (end > WE) continue;
+    let score = 0;
+    const breakdown = [];
+    for (const d of allDays) {
+      let cnt = 0;
+      for (const r of ROOMS) {
+        const busy = DATA[r.key][d.date] || [];
+        if (busy.every(([s,e]) => e <= h || s >= end)) cnt++;
+      }
+      score += cnt;
+      if (cnt > 0) breakdown.push({ d, cnt });
+    }
+    windows.push({ h, end, score, breakdown });
+  }
+  windows.sort((a,b) => b.score - a.score);
+
+  const seen = new Set();
+  const top = [];
+  for (const w of windows) {
+    const key = `${Math.round(w.h*10)}-${Math.round(w.end*10)}`;
+    if (!seen.has(key) && top.length < 5) { top.push(w); seen.add(key); }
+  }
+
+  const maxScore = top[0].score;
+  let html = '';
+  top.forEach((w, i) => {
+    const pct = Math.round((w.score / maxScore) * 100);
+    const chips = w.breakdown.map(({d, cnt}) =>
+      `<span class="best-day-chip ${cnt >= 4 ? 'good' : ''}">${d.dow.slice(0,3)} ${d.date} <span class="rooms-n">${cnt}/5</span></span>`
+    ).join('');
+    html += `<div class="best-card ${i===0?'top':''}">
+      <div class="best-card-header">
+        <span class="best-time">${fmtH(w.h)}–${fmtH(w.end)}</span>
+        ${i===0 ? '<span class="best-badge">★ Top pick</span>' : ''}
+      </div>
+      <div class="best-bar-wrap"><div class="best-bar-bg"><div class="best-bar-fill" style="width:${pct}%"></div></div></div>
+      <div class="best-body">
+        <div style="font-size:0.72rem;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:8px;">${w.score} sal × dni dostępnych</div>
+        <div class="best-day-list">${chips}</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('best-content').innerHTML = html;
+}
+
+function render() {
+  if (currentView === 'timeline') renderTimeline();
+  if (currentView === 'slots') renderSlots();
+  if (currentView === 'best') renderBest();
+}
+
+// Footer date
+document.getElementById('update-date').textContent = 'Aktualizacja: ' + new Date().toLocaleDateString('pl-PL', {day:'2-digit',month:'long',year:'numeric'});
+
+render();
+</script>
+</body>
+</html>
