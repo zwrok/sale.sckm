@@ -160,25 +160,27 @@
 <script>
 // ── DANE ─────────────────────────────────────────────────────────────────────
 // Klucze: 0=pon 1=wt 2=śr 3=czw 4=pt 5=sob 6=nd
+// Godziny: liczby dziesiętne — 9.5 = 9:30, 16.25 = 16:15
+// Źródło: kalendarz "Zajętość Wszystkich Sal", tydzień 23–29.03.2026
 // Format: [start, koniec, 'Nazwisko'] — godziny dziesiętne: 9.5 = 9:30
 const DATA = {
   // Taneczna IV p. 90 baletowa
   baletowa: {
     0: [[16.5, 18, 'A. Kuźma']],
-    1: [[9.5, 11.5, ''], [11.5, 18, ''], [18, 22, '']],
+    1: [[9.5, 11.5, 'M. Dudziuk-Koluch'], [15, 18, 'K. Pamula'], [18, 22, 'M. Mück']],
     2: [[9.5, 11.5, 'M. Dudziuk']],
-    3: [[9.5, 11.5, ''], [11.5, 18, ''], [18, 21, '']],
+    3: [[9.5, 11.5, 'M. Świerczek'], [11.5, 18, 'K. Pamula'], [18, 21, 'A. Kuźma']],
     4: [[14.5, 15.5, 'A. Domagała'], [17, 19.5, 'J. Fąfara']],
     5: [[11, 12.5, 'A. Szewczyk']],
     6: [[10, 14, 'A. Domagała']],
   },
   // GALERIA 17
   galeria: {
-    0: [[9, 11.25, '']],
-    1: [[9, 11.25, ''], [16.5, 18.75, '']],
-    2: [[9, 11.25, ''], [15.5, 18.5, 'D.K. Buczek']],
-    3: [[9, 11.25, '']],
-    4: [[10, 11.5, '']],
+    0: [[9, 11.25, 'M. Puchalska']],
+    1: [[9, 11.25, 'M. Puchalska'], [16.5, 18.75, 'M. Puchalska']],
+    2: [[9, 11.25, 'M. Puchalska'], [15.5, 18.5, 'D.K. Buczek']],
+    3: [[9, 11.25, 'M. Puchalska']],
+    4: [[10, 11.5, 'D. Kozłowska']],
     5: [[10, 15.25, 'M. Koluch']],
     6: [],
   },
@@ -198,13 +200,13 @@ const DATA = {
     1: [[9, 12, 'A. Kolanowska']],
     2: [[9.5, 10.25, 'T. Dylawerski']],
     3: [[10, 11.5, 'M. Dudziuk']],
-    4: [[10, 11.5, ''], [15.5, 20.5, 'A. Domagała']],
+    4: [[10, 11.5, 'M. Dudziuk-K.'], [15.5, 20.5, 'A. Domagała']],
     5: [],
     6: [],
   },
   // Plastyczna 83/84
   plastyczna: {
-    0: [[8, 11, 'D. Dronka-Góra'], [16.5, 19.5, 'A. Wozowicz']],
+    0: [[8, 11, 'D. Dronka-Góra / M. Góra'], [16.5, 19.5, 'A. Wozowicz']],
     1: [[8.5, 11.5, 'D. Dronka-Góra'], [15.5, 19.5, 'M. Flisek']],
     2: [[8.5, 14.5, 'D. Dronka-Góra / M. Góra'], [15.5, 17.75, 'M. Flisek']],
     3: [[16.5, 20, 'A. Wozowicz']],
