@@ -136,8 +136,8 @@
     <p>SCKM — rozkład tygodniowy</p>
   </div>
   <div class="cta-box">
-    Chcesz wynająć scenę teatralną? Złóż wniosek rezerwacyjny:<br>
-    <a href="https://cal.com/wynajmy" target="_blank">formularz rezerwacji →</a>
+    Widzisz wolne okno? Złóż wniosek rezerwacyjny:<br>
+    <a href="https://cal.com/wynajmy.sckm/sale" target="_blank">formularz rezerwacji →</a>
     <small>Każda rezerwacja wymaga akceptacji.</small>
   </div>
 </header>
@@ -160,69 +160,67 @@
 <script>
 // ── DANE ─────────────────────────────────────────────────────────────────────
 // Klucze: 0=pon 1=wt 2=śr 3=czw 4=pt 5=sob 6=nd
-// Godziny: liczby dziesiętne — 9.5 = 9:30, 16.25 = 16:15
+// Format: [start, koniec, 'Nazwisko'] — godziny dziesiętne: 9.5 = 9:30
 const DATA = {
   // Taneczna IV p. 90 baletowa
-  // Źródło: kalendarz "Zajętość Wszystkich Sal", tydzień 23–29.03.2026
   baletowa: {
-    0: [[16.5, 18]],                           // pon 23.03: 16:30–18:00 (A.Kuźma)
-    1: [[9.5, 11.5], [11.5, 18], [18, 22]],      // wt: 9:30-11:30, 11:30-18:00, 18:00-22:00
-    2: [[9.5, 11.5]],                          // śr  25.03: 9:30–11:30 (M.Dudziuk)
-    3: [[9.5, 11.5], [11.5, 18], [18, 21]],    // czw: 9:30-11:30, 11:30-18:00, 18:00-21:00
-    4: [[14.5, 15.5], [17, 19.5]],             // pt  27.03: 14:30–15:30 (A.Domagała), 17:00–19:30 (J.Fąfara)
-    5: [[11, 12.5]],                           // sob 28.03: 11:00–12:30 (A.Szewczyk)
-    6: [[10, 14]],                             // nd  29.03: 10:00–14:00 (A.Domagała)
+    0: [[16.5, 18, 'A. Kuźma']],
+    1: [[9.5, 11.5, ''], [11.5, 18, ''], [18, 22, '']],
+    2: [[9.5, 11.5, 'M. Dudziuk']],
+    3: [[9.5, 11.5, ''], [11.5, 18, ''], [18, 21, '']],
+    4: [[14.5, 15.5, 'A. Domagała'], [17, 19.5, 'J. Fąfara']],
+    5: [[11, 12.5, 'A. Szewczyk']],
+    6: [[10, 14, 'A. Domagała']],
   },
   // GALERIA 17
   galeria: {
-    0: [[9, 11.25]],                           // pon 23.03: 9:00–11:15
-    1: [[9, 11.25], [16.5, 18.75]],            // wt  24.03: 9:00–11:15, 16:30–18:45
-    2: [[9, 11.25], [15.5, 18.5]],             // śr  25.03: 9:00–11:15, 15:30–18:30 (D.K.Buczek)
-    3: [[9, 11.25]],                           // czw 26.03: 9:00–11:15
-    4: [[10, 11.5]],                           // pt  27.03: 10:00–11:30
-    5: [[10, 15.25]],                          // sob 28.03: 10:00–15:15 (M.Koluch)
-    6: [],                                     // nd  29.03: brak
+    0: [[9, 11.25, '']],
+    1: [[9, 11.25, ''], [16.5, 18.75, '']],
+    2: [[9, 11.25, ''], [15.5, 18.5, 'D.K. Buczek']],
+    3: [[9, 11.25, '']],
+    4: [[10, 11.5, '']],
+    5: [[10, 15.25, 'M. Koluch']],
+    6: [],
   },
   // Gimnastyczna 34
   gimnastyczna: {
-    0: [[15, 16.5], [16.5, 20.25], [20.25, 21.75]], // pon 23.03: 15:00–16:30 (Kuźma), 16:30–20:15 (Liszkiewicz), 20:15–21:45 (Głowacz)
-    1: [[16.5, 18]],                           // wt  24.03: 16:30–18:00 (M.Mück)
-    2: [[16.5, 20.25], [20.25, 21.75]],        // śr  25.03: 16:30–20:15 (Liszkiewicz), 20:15–21:45 (Głowacz)
-    3: [[15, 21]],                             // czw 26.03: 15:00–21:00 (A.Kuźma)
-    4: [[15.5, 17], [17, 20.5]],               // pt  27.03: 15:30–17:00 (J.Fąfara), 17:00–20:30 (Z.Liszkiewicz)
-    5: [[9, 15.25]],                           // sob 28.03: 9:00–15:15 (J.Głowacz)
-    6: [[9, 12]],                              // nd  29.03: 9:00–12:00 (Z.Liszkiewicz)
+    0: [[15, 16.5, 'A. Kuźma'], [16.5, 20.25, 'Z. Liszkiewicz'], [20.25, 21.75, 'J. Głowacz']],
+    1: [[16.5, 18, 'M. Mück']],
+    2: [[16.5, 20.25, 'Z. Liszkiewicz'], [20.25, 21.75, 'J. Głowacz']],
+    3: [[15, 21, 'A. Kuźma']],
+    4: [[15.5, 17, 'J. Fąfara'], [17, 20.5, 'Z. Liszkiewicz']],
+    5: [[9, 15.25, 'J. Głowacz']],
+    6: [[9, 12, 'Z. Liszkiewicz']],
   },
   // Teatralna IV p. 78
   teatralna: {
-    0: [[9, 12]],                              // pon 23.03: 9:00–12:00 (A.Kolanowska)
-    1: [[9, 12]],                              // wt  24.03: 9:00–12:00 (A.Kolanowska)
-    2: [[9.5, 10.25]],                         // śr  25.03: 9:30–10:15 (T.Dylawerski)
-    3: [[10, 11.5]],                           // czw 26.03: 10:00–11:30 (M.Dudziuk)
-    4: [[10, 11.5], [15.5, 20.5]],             // pt  27.03: 10:00–11:30, 15:30–20:30 (A.Domagała)
-    5: [],                                     // sob 28.03: brak
-    6: [],                                     // nd  29.03: brak
+    0: [[9, 12, 'A. Kolanowska']],
+    1: [[9, 12, 'A. Kolanowska']],
+    2: [[9.5, 10.25, 'T. Dylawerski']],
+    3: [[10, 11.5, 'M. Dudziuk']],
+    4: [[10, 11.5, ''], [15.5, 20.5, 'A. Domagała']],
+    5: [],
+    6: [],
   },
   // Plastyczna 83/84
   plastyczna: {
-    0: [[8, 11], [16.5, 19.5]],                // pon 23.03: 8:00–11:00 (D.Dronka-Góra), 16:30–19:30 (A.Wozowicz)
-    1: [[8.5, 11.5], [15.5, 19.5]],            // wt  24.03: 8:30–11:30 (D.Dronka-Góra), 15:30–19:30 (M.Flisek)
-    2: [[8.5, 14.5], [15.5, 17.75]],           // śr  25.03: 8:30–14:30 (D.Dronka-Góra/M.Góra), 15:30–17:45 (M.Flisek)
-    3: [[16.5, 20]],                           // czw 26.03: 16:30–20:00 (A.Wozowicz)
-    4: [[15.5, 18]],                           // pt  27.03: 15:30–18:00 (M.Flisek)
-    5: [],                                     // sob 28.03: brak
-    6: [],                                     // nd  29.03: brak
+    0: [[8, 11, 'D. Dronka-Góra'], [16.5, 19.5, 'A. Wozowicz']],
+    1: [[8.5, 11.5, 'D. Dronka-Góra'], [15.5, 19.5, 'M. Flisek']],
+    2: [[8.5, 14.5, 'D. Dronka-Góra / M. Góra'], [15.5, 17.75, 'M. Flisek']],
+    3: [[16.5, 20, 'A. Wozowicz']],
+    4: [[15.5, 18, 'M. Flisek']],
+    5: [],
+    6: [],
   },
   // Scena 23
-  // Źródło: kalendarz "Zajętość Wszystkich Sal", tydzień 23–29.03.2026
   scena23: {
-    0: [[16.5, 18], [18, 21.5]],               // pon 23.03: 16:30–18:00 (K.Hussak-Przybyło), 18:00–21:30 (D.Setlak)
-    1: [[8.5, 12.25], [16, 18], [18, 21]],     // wt  24.03: 8:30–12:15 (T.Dylawerski), 16:00–18:00 (A.Szewczyk), 18:00–21:00 (A.Barczyk)
-    2: [[9.5, 11], [16, 18], [18, 20.25]],     // śr  25.03: 9:30–11:00 (A.Barczyk), 16:00–18:00 (A.Szewczyk), 18:00–20:15 (P.Przybyło)
-    3: [[8, 11.5], [14, 16.5], [16.5, 18.5], [18.5, 22.25]], // czw 26.03: 8:00–11:30 (T.Dylawerski/A.Kolanowska), 14:00–16:30 (A.Kolanowska), 16:30–18:30 (D.Setlak), 18:30–22:15 (M.Mück)
-    4: [[9, 12.5], [17, 21.5]],                // pt  27.03: 9:00–12:30 (T.Dylawerski/M.Dudziuk), 17:00–21:30 (W.Terechowicz)
-    5: [[9, 13]],                              // sob 28.03: 9:00–13:00 (O.Barczyk/T.Dylawerski/J.Głowacz)
-    6: [[9, 12.5]],                            // nd  29.03: 9:00–12:30 (Godziny Rodziny)
+    0: [[16.5, 18, 'K. Hussak-Przybyło'], [18, 21.5, 'D. Setlak']],
+    1: [[8.5, 12.25, 'T. Dylawerski'], [16, 18, 'A. Szewczyk'], [18, 21, 'A. Barczyk']],
+    2: [[9.5, 11, 'A. Barczyk'], [16, 18, 'A. Szewczyk'], [18, 20.25, 'P. Przybyło']],
+    3: [[8, 11.5, 'T. Dylawerski / A. Kolanowska'], [14, 16.5, 'A. Kolanowska'], [16.5, 18.5, 'D. Setlak'], [18.5, 22.25, 'M. Mück']],
+    4: [[9, 12.5, 'T. Dylawerski / M. Dudziuk'], [17, 21.5, 'W. Terechowicz']],
+    5: [[9, 13, 'O. Barczyk / T. Dylawerski / J. Głowacz']],
+    6: [[9, 12.5, 'Godziny Rodziny']],
   },
 };
 
@@ -331,8 +329,11 @@ for (const d of DAYS) {
     let segs = ticksHTML;
     for (const [s,e] of free)
       segs += `<div class="fseg" style="left:${p(s)};width:${w(s,e)}"></div>`;
-    for (const [s,e] of busy) {
-      const label = `${r.label}  ${fmt(s)} – ${fmt(e)}`;
+    for (const [s,e,name] of busy) {
+      const timeStr = `${fmt(s)} – ${fmt(e)}`;
+      const label = name
+        ? `${r.label}  ·  ${timeStr}  ·  ${name}`
+        : `${r.label}  ·  ${timeStr}`;
       segs += `<div class="busy" style="left:${p(s)};width:${w(s,e)}"
         onmouseenter="showTip('${label}',this)"
         onmouseleave="hideTip()"
