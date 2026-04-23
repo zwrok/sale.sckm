@@ -16,6 +16,8 @@
     #frame-wrap { display:none; position:fixed; inset:0; }
     #frame-wrap.show { display:block; }
     iframe { width:100%; height:100%; border:none; display:block; }
+
+    /* Ekran logowania */
     #auth { position:fixed; inset:0; display:flex; flex-direction:column;
       align-items:center; justify-content:center; padding:1.5rem; gap:1.4rem; background:var(--bg); }
     #auth.hide { display:none; }
@@ -45,13 +47,14 @@
     .divider { display:flex; align-items:center; gap:8px; font-family:'DM Mono',monospace;
       font-size:.54rem; color:var(--mut); }
     .divider::before,.divider::after { content:''; flex:1; border-top:1px solid rgba(255,255,255,.08); }
-    .btn-pub { background:none; border:1px solid var(--bd); color:var(--mut); border-radius:8px;
-      padding:10px; font-family:'DM Mono',monospace; font-size:.65rem; cursor:pointer; width:100%;
-      text-align:center; transition:all .12s; -webkit-tap-highlight-color:transparent; }
+    /* Przycisk widoku publicznego — subtelny, ale czytelny */
+    .btn-pub { background:none; border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.5);
+      border-radius:8px; padding:10px; font-family:'DM Mono',monospace; font-size:.64rem;
+      cursor:pointer; width:100%; text-align:center; transition:all .15s;
+      -webkit-tap-highlight-color:transparent; }
     .btn-pub:hover,.btn-pub:active { border-color:rgba(255,255,255,.25); color:var(--txt); }
-    .pub-note { font-family:'DM Mono',monospace; font-size:.54rem; color:var(--mut);
-      text-align:center; line-height:1.6; }
-    .pub-note em { color:rgba(255,255,255,.35); font-style:normal; }
+    .pub-note { font-family:'DM Mono',monospace; font-size:.52rem;
+      color:rgba(255,255,255,.25); text-align:center; line-height:1.6; }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 </head>
@@ -60,19 +63,19 @@
 <div id="auth">
   <div class="logo">Rezerwacja <em>Sal</em><sub>SCKM — Kraków</sub></div>
   <div class="card">
-    <div class="card-title">Dostęp do systemu</div>
+    <div class="card-title">Zaloguj się</div>
     <div class="inp-wrap">
-      <label>Hasło dla pracowników SCKM</label>
+      <label>Hasło pracownika SCKM</label>
       <input type="password" id="pwd" placeholder="••••••••"
         autocomplete="current-password"
         onkeydown="if(event.key==='Enter') login()">
     </div>
-    <div class="err hide" id="err">Nieprawidłowe hasło. Spróbuj ponownie.</div>
+    <div class="err hide" id="err">Nieprawidłowe hasło.</div>
     <button class="btn-login" onclick="login()">Zaloguj →</button>
     <div class="divider">lub</div>
-    <button class="btn-pub" onclick="goPublic()">Kontynuuj bez hasła — widok publiczny</button>
-    <div class="pub-note">Widok publiczny: harmonogram bez danych osobowych<br>
-      <em>Nazwiska prowadzących są ukryte</em></div>
+    <!-- Zmieniony tekst: bez "bez hasła", bardziej neutralny -->
+    <button class="btn-pub" onclick="goPublic()">Przeglądaj harmonogram →</button>
+    <div class="pub-note">widok publiczny · bez danych osobowych</div>
   </div>
 </div>
 
@@ -82,15 +85,14 @@
 
 <script>
   // ══════════════════════════════════════════════
-  //  KONFIGURACJA — zmień APP_URL i opcjonalnie PASS_HASH
+  //  KONFIGURACJA
   // ══════════════════════════════════════════════
 
-  // 1. Wklej tutaj URL swojego Apps Script Web App:
-  const APP_URL = 'https://script.google.com/macros/s/AKfycbySJWAzzqT9tbv8KphDxWa2bFuXUdkcum3ruFM2ZeA-EUYB3C19BHU0cT1Mk1Xq82I4Uw/exec';
+  // 1. Wklej URL swojego Apps Script Web App:
+  const APP_URL = 'WKLEJ_TUTAJ_URL_APPS_SCRIPT';
 
-  // 2. Hash SHA-256 hasła. Domyślne hasło: sckm2026
-  //    Aby zmienić hasło: https://emn178.github.io/online-tools/sha256.html
-  //    Wpisz nowe hasło → skopiuj hash → wklej poniżej
+  // 2. Hash SHA-256 hasła. Domyślne: sckm2026
+  //    Zmień na: https://emn178.github.io/online-tools/sha256.html
   const PASS_HASH = '2de3ec165735b2e21f5a57d287a725c3d6d4a7c837038e20b4761f8fe5055f9b';
 
   // ══════════════════════════════════════════════
@@ -106,7 +108,7 @@
     const hash = await sha256(pwd);
     if (hash === PASS_HASH) {
       sessionStorage.setItem('sckm_ok','1');
-      showApp(APP_URL);
+      showApp(false); // false = tryb pracownika (pełny)
     } else {
       const err = document.getElementById('err');
       err.classList.remove('hide');
@@ -118,19 +120,27 @@
 
   function goPublic() {
     sessionStorage.removeItem('sckm_ok');
-    // Parametr ?public=1 możesz w przyszłości obsłużyć w Apps Script
-    // żeby ukryć nazwiska — na razie oba tryby ładują tę samą aplikację
-    showApp(APP_URL + '?public=1');
+    showApp(true); // true = tryb publiczny (bez nazwisk)
   }
 
-  function showApp(url) {
-    document.getElementById('frame').src = url;
+  function showApp(isPublic) {
+    const frame = document.getElementById('frame');
+    // Przekazujemy tryb przez URL parametr
+    frame.src = APP_URL + (isPublic ? '?mode=public' : '');
     document.getElementById('auth').classList.add('hide');
     document.getElementById('frame-wrap').classList.add('show');
+
+    // Gdy iframe się załaduje, wyślij wiadomość z trybem
+    frame.onload = () => {
+      frame.contentWindow.postMessage(
+        { type: 'sckm_mode', public: isPublic },
+        '*'
+      );
+    };
   }
 
   window.onload = () => {
-    if (sessionStorage.getItem('sckm_ok') === '1') showApp(APP_URL);
+    if (sessionStorage.getItem('sckm_ok') === '1') showApp(false);
   };
 </script>
 </body>
