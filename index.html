@@ -1,362 +1,137 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dostępność Sal — SCKM</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0f0f0f;
-    --surface: #1a1a1a;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.16);
-    --text: #f0ede8;
-    --muted: #777;
-    --muted2: #444;
-    --green: #7ec87e;
-    --green-dim: rgba(126,200,126,0.12);
-    --red: #d95f5f;
-    --accent: #c8b87e;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; }
-
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 1.6rem 2rem 1.3rem;
-    display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-  }
-  .logo h1 { font-size: clamp(1.4rem,3.5vw,2.1rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-  .logo h1 em { color: var(--accent); font-style: normal; }
-  .logo p { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-top: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
-
-  .cta-box {
-    background: var(--green-dim);
-    border: 1px solid rgba(126,200,126,0.22);
-    border-radius: 8px; padding: 10px 16px;
-    font-size: 0.8rem; color: var(--green); max-width: 300px; line-height: 1.6;
-  }
-  .cta-box a { color: var(--accent); font-weight: 700; text-decoration: none; border-bottom: 1px solid rgba(200,184,126,0.5); }
-  .cta-box a:hover { opacity: 0.8; }
-  .cta-box small { display: block; opacity: 0.6; margin-top: 2px; font-size: 0.7rem; }
-
-  .legend-bar {
-    padding: 0.6rem 2rem;
-    border-bottom: 1px solid var(--border);
-    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
-    font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted);
-  }
-  .li { display: flex; align-items: center; gap: 5px; }
-  .ldot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-  .legend-hint { margin-left: auto; font-size: 0.6rem; opacity: 0.6; }
-
-  main { padding: 1.5rem 2rem 3rem; }
-
-  .day-section { margin-bottom: 2.2rem; }
-
-  .day-heading {
-    display: flex; align-items: baseline; gap: 10px;
-    padding-bottom: 8px; margin-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .day-short { font-size: 1rem; font-weight: 700; }
-  .day-full  { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); }
-
-  .row {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 7px;
-  }
-  .rlabel {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.64rem; color: var(--muted);
-    line-height: 1.3; text-align: right;
-    padding-right: 4px;
-  }
-
-  .bar {
-    position: relative; height: 34px;
-    background: var(--surface);
-    border-radius: 5px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .tick  { position: absolute; top:0; bottom:0; width:1px; background: rgba(255,255,255,0.05); pointer-events:none; }
-  .tick3 { background: rgba(255,255,255,0.11); }
-  .busy  { position: absolute; top:3px; bottom:3px; background: var(--red); border-radius:3px; opacity:0.82; cursor:pointer; transition: opacity .1s; }
-  .busy:hover, .busy:active { opacity:1; }
-  .fseg  { position: absolute; top:3px; bottom:3px; background: var(--green); border-radius:3px; opacity:0.16; pointer-events:none; }
-
-  .axis-row {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    gap: 10px;
-    margin-top: 3px;
-  }
-  .axis { position: relative; height: 18px; }
-  .hlabel {
-    position: absolute;
-    font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted2);
-    transform: translateX(-50%); white-space: nowrap; top: 0;
-  }
-  .hlabel:first-child  { transform: translateX(0); }
-  .hlabel:last-child   { transform: translateX(-100%); }
-
-  /* tooltip — stays within viewport */
-  .tt {
-    position: fixed; z-index: 200;
-    background: #1c1c1c; border: 1px solid var(--border2);
-    border-radius: 6px; padding: 6px 12px;
-    font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text);
-    pointer-events: none;
-    white-space: nowrap;
-    max-width: calc(100vw - 24px);
-    /* hidden by default via JS */
-  }
-
-  footer { padding: 1rem 2rem; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted2); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
-
-  @media (max-width: 520px) {
-    header, .legend-bar, main, footer { padding-left: 1rem; padding-right: 1rem; }
-    .row, .axis-row { grid-template-columns: 80px 1fr; gap: 6px; }
-    .rlabel { font-size: 0.56rem; }
-    .hlabel { font-size: 0.5rem; }
-    .bar { height: 28px; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Rezerwacja Sal — SCKM</title>
+  <style>
+    :root {
+      --bg:#0f0f0f; --sur:#1a1a1a; --sur2:#242424;
+      --bd:rgba(255,255,255,.12); --txt:#f0ede8;
+      --mut:#777; --acc:#c8b87e; --grn:#7ec87e; --red:#c85050;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { width:100%; height:100%; background:var(--bg); color:var(--txt);
+      font-family:'Syne',sans-serif; overscroll-behavior:none; }
+    #frame-wrap { display:none; position:fixed; inset:0; }
+    #frame-wrap.show { display:block; }
+    iframe { width:100%; height:100%; border:none; display:block; }
+    #auth { position:fixed; inset:0; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; padding:1.5rem; gap:1.4rem; background:var(--bg); }
+    #auth.hide { display:none; }
+    .logo { font-size:1.6rem; font-weight:800; letter-spacing:-.03em; text-align:center; }
+    .logo em { color:var(--acc); font-style:normal; }
+    .logo sub { display:block; font-family:'DM Mono',monospace; font-size:.58rem; color:var(--mut);
+      letter-spacing:.08em; text-transform:uppercase; margin-top:4px; font-weight:400; }
+    .card { background:var(--sur); border:1px solid var(--bd); border-radius:12px; padding:1.6rem;
+      width:100%; max-width:340px; display:flex; flex-direction:column; gap:1rem; }
+    .card-title { font-family:'DM Mono',monospace; font-size:.62rem; text-transform:uppercase;
+      letter-spacing:.08em; color:var(--mut); text-align:center; }
+    .inp-wrap { display:flex; flex-direction:column; gap:6px; }
+    .inp-wrap label { font-family:'DM Mono',monospace; font-size:.56rem;
+      text-transform:uppercase; letter-spacing:.06em; color:var(--mut); }
+    input[type=password] { width:100%; background:var(--sur2); border:1px solid var(--bd);
+      border-radius:7px; color:var(--txt); font-family:'DM Mono',monospace; font-size:.9rem;
+      padding:11px 14px; outline:none; letter-spacing:.12em; transition:border-color .15s;
+      -webkit-appearance:none; }
+    input[type=password]:focus { border-color:var(--acc); }
+    .err { font-family:'DM Mono',monospace; font-size:.6rem; color:var(--red);
+      text-align:center; min-height:1em; transition:opacity .2s; }
+    .err.hide { opacity:0; }
+    .btn-login { background:var(--acc); color:#000; border:none; border-radius:8px; padding:12px;
+      font-family:'Syne',sans-serif; font-weight:800; font-size:.9rem; cursor:pointer; width:100%;
+      transition:opacity .12s; -webkit-tap-highlight-color:transparent; }
+    .btn-login:hover,.btn-login:active { opacity:.85; }
+    .divider { display:flex; align-items:center; gap:8px; font-family:'DM Mono',monospace;
+      font-size:.54rem; color:var(--mut); }
+    .divider::before,.divider::after { content:''; flex:1; border-top:1px solid rgba(255,255,255,.08); }
+    .btn-pub { background:none; border:1px solid var(--bd); color:var(--mut); border-radius:8px;
+      padding:10px; font-family:'DM Mono',monospace; font-size:.65rem; cursor:pointer; width:100%;
+      text-align:center; transition:all .12s; -webkit-tap-highlight-color:transparent; }
+    .btn-pub:hover,.btn-pub:active { border-color:rgba(255,255,255,.25); color:var(--txt); }
+    .pub-note { font-family:'DM Mono',monospace; font-size:.54rem; color:var(--mut);
+      text-align:center; line-height:1.6; }
+    .pub-note em { color:rgba(255,255,255,.35); font-style:normal; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    <h1>Dostępność <em>Sal</em></h1>
-    <p>SCKM — rozkład tygodniowy</p>
+<div id="auth">
+  <div class="logo">Rezerwacja <em>Sal</em><sub>SCKM — Kraków</sub></div>
+  <div class="card">
+    <div class="card-title">Dostęp do systemu</div>
+    <div class="inp-wrap">
+      <label>Hasło dla pracowników SCKM</label>
+      <input type="password" id="pwd" placeholder="••••••••"
+        autocomplete="current-password"
+        onkeydown="if(event.key==='Enter') login()">
+    </div>
+    <div class="err hide" id="err">Nieprawidłowe hasło. Spróbuj ponownie.</div>
+    <button class="btn-login" onclick="login()">Zaloguj →</button>
+    <div class="divider">lub</div>
+    <button class="btn-pub" onclick="goPublic()">Kontynuuj bez hasła — widok publiczny</button>
+    <div class="pub-note">Widok publiczny: harmonogram bez danych osobowych<br>
+      <em>Nazwiska prowadzących są ukryte</em></div>
   </div>
-  <div class="cta-box">
-    Planujesz wynajem sceny teatralnej? Złóż wniosek rezerwacyjny:<br>
-    <a href="https://cal.com/wynajmy.sckm/sale" target="_blank">formularz rezerwacji →</a>
-    <small>Każda rezerwacja wymaga akceptacji.</small>
-  </div>
-</header>
-
-<div class="legend-bar">
-  <div class="li"><div class="ldot" style="background:var(--red)"></div>sala zajęta</div>
-  <div class="li"><div class="ldot" style="background:var(--green);opacity:0.5"></div>sala wolna</div>
-  <span class="legend-hint">dotknij czerwony blok, aby zobaczyć zajęte godziny</span>
 </div>
 
-<main id="main"></main>
-
-<footer>
-  <span>Dane: Zajętość Wszystkich Sal · aktualizacja ręczna</span>
-  <span id="fdate"></span>
-</footer>
-
-<div class="tt" id="tt" style="display:none"></div>
+<div id="frame-wrap">
+  <iframe id="frame" src="" allow="fullscreen"></iframe>
+</div>
 
 <script>
-// ── DANE ─────────────────────────────────────────────────────────────────────
-// Klucze: 0=pon 1=wt 2=śr 3=czw 4=pt 5=sob 6=nd
-// Godziny: liczby dziesiętne — 9.5 = 9:30, 16.25 = 16:15
-// Źródło: kalendarz "Zajętość Wszystkich Sal", tydzień 23–29.03.2026
-// Format: [start, koniec, 'Nazwisko'] — godziny dziesiętne: 9.5 = 9:30
-const DATA = {
-  // Taneczna IV p. 90 baletowa
-  baletowa: {
-    0: [[16.5, 18, 'A. Kuźma']],
-    1: [[9.5, 11.5, 'M. Dudziuk-Koluch'], [15, 18, 'K. Pamula'], [18, 22, 'M. Mück']],
-    2: [[9.5, 11.5, 'M. Dudziuk']],
-    3: [[9.5, 11.5, 'M. Świerczek'], [11.5, 18, 'K. Pamula'], [18, 21, 'A. Kuźma']],
-    4: [[14.5, 15.5, 'A. Domagała'], [17, 19.5, 'J. Fąfara']],
-    5: [[11, 12.5, 'A. Szewczyk']],
-    6: [[10, 14, 'A. Domagała']],
-  },
-  // GALERIA 17
-  galeria: {
-    0: [[9, 11.25, 'M. Puchalska']],
-    1: [[9, 11.25, 'M. Puchalska'], [16.5, 18.75, 'M. Puchalska']],
-    2: [[9, 11.25, 'M. Puchalska'], [15.5, 18.5, 'D.K. Buczek']],
-    3: [[9, 11.25, 'M. Puchalska']],
-    4: [[10, 11.5, 'D. Kozłowska']],
-    5: [[10, 15.25, 'M. Koluch']],
-    6: [],
-  },
-  // Gimnastyczna 34
-  gimnastyczna: {
-    0: [[15, 16.5, 'A. Kuźma'], [16.5, 20.25, 'Z. Liszkiewicz'], [20.25, 21.75, 'J. Głowacz']],
-    1: [[16.5, 18, 'M. Mück']],
-    2: [[16.5, 20.25, 'Z. Liszkiewicz'], [20.25, 21.75, 'J. Głowacz']],
-    3: [[15, 21, 'A. Kuźma']],
-    4: [[15.5, 17, 'J. Fąfara'], [17, 20.5, 'Z. Liszkiewicz']],
-    5: [[9, 15.25, 'J. Głowacz']],
-    6: [[9, 12, 'Z. Liszkiewicz']],
-  },
-  // Teatralna IV p. 78
-  teatralna: {
-    0: [[9, 12, 'A. Kolanowska']],
-    1: [[9, 12, 'A. Kolanowska']],
-    2: [[9.5, 10.25, 'T. Dylawerski']],
-    3: [[10, 11.5, 'M. Dudziuk']],
-    4: [[10, 11.5, 'M. Dudziuk-K.'], [15.5, 20.5, 'A. Domagała']],
-    5: [],
-    6: [],
-  },
-  // Plastyczna 83/84
-  plastyczna: {
-    0: [[8, 11, 'D. Dronka-Góra / M. Góra'], [16.5, 19.5, 'A. Wozowicz']],
-    1: [[8.5, 11.5, 'D. Dronka-Góra'], [15.5, 19.5, 'M. Flisek']],
-    2: [[8.5, 14.5, 'D. Dronka-Góra / M. Góra'], [15.5, 17.75, 'M. Flisek']],
-    3: [[16.5, 20, 'A. Wozowicz']],
-    4: [[15.5, 18, 'M. Flisek']],
-    5: [],
-    6: [],
-  },
-  // Scena 23
-  scena23: {
-    0: [[16.5, 18, 'K. Hussak-Przybyło'], [18, 21.5, 'D. Setlak']],
-    1: [[8.5, 12.25, 'T. Dylawerski'], [16, 18, 'A. Szewczyk'], [18, 21, 'A. Barczyk']],
-    2: [[9.5, 11, 'A. Barczyk'], [16, 18, 'A. Szewczyk'], [18, 20.25, 'P. Przybyło']],
-    3: [[8, 11.5, 'T. Dylawerski / A. Kolanowska'], [14, 16.5, 'A. Kolanowska'], [16.5, 18.5, 'D. Setlak'], [18.5, 22.25, 'M. Mück']],
-    4: [[9, 12.5, 'T. Dylawerski / M. Dudziuk'], [17, 21.5, 'W. Terechowicz']],
-    5: [[9, 13, 'O. Barczyk / T. Dylawerski / J. Głowacz']],
-    6: [[9, 12.5, 'Godziny Rodziny']],
-  },
-};
+  // ══════════════════════════════════════════════
+  //  KONFIGURACJA — zmień APP_URL i opcjonalnie PASS_HASH
+  // ══════════════════════════════════════════════
 
-const ROOMS = [
-  { key: 'baletowa',     label: 'Baletowa' },
-  { key: 'galeria',      label: 'Galeria 17' },
-  { key: 'gimnastyczna', label: 'Gimnastyczna' },
-  { key: 'teatralna',    label: 'Teatralna p.78' },
-  { key: 'plastyczna',   label: 'Plastyczna 83/84' },
-  { key: 'scena23',      label: 'Scena 23' },
-];
+  // 1. Wklej tutaj URL swojego Apps Script Web App:
+  const APP_URL = 'WKLEJ_TUTAJ_URL_APPS_SCRIPT';
 
-const DAYS = [
-  { key:0, short:'Pon', full:'Poniedziałek' },
-  { key:1, short:'Wt',  full:'Wtorek' },
-  { key:2, short:'Śr',  full:'Środa' },
-  { key:3, short:'Czw', full:'Czwartek' },
-  { key:4, short:'Pt',  full:'Piątek' },
-  { key:5, short:'Sob', full:'Sobota' },
-  { key:6, short:'Nd',  full:'Niedziela' },
-];
+  // 2. Hash SHA-256 hasła. Domyślne hasło: sckm2026
+  //    Aby zmienić hasło: https://emn178.github.io/online-tools/sha256.html
+  //    Wpisz nowe hasło → skopiuj hash → wklej poniżej
+  const PASS_HASH = '2de3ec165735b2e21f5a57d287a725c3d6d4a7c837038e20b4761f8fe5055f9b';
 
-const WS = 8, WE = 21, SPAN = WE - WS;
+  // ══════════════════════════════════════════════
 
-function p(h)     { return ((h - WS) / SPAN * 100).toFixed(3) + '%'; }
-function w(s, e)  { return ((e - s)  / SPAN * 100).toFixed(3) + '%'; }
-function fmt(h)   { const hh=Math.floor(h),mm=Math.round((h-hh)*60); return hh+':'+String(mm).padStart(2,'0'); }
-
-function getFree(busy) {
-  const s=[...busy].sort((a,b)=>a[0]-b[0]);
-  const out=[]; let cur=WS;
-  for(const [a,b] of s){ if(a>cur+0.15) out.push([cur,a]); cur=Math.max(cur,b); }
-  if(cur<WE-0.15) out.push([cur,WE]);
-  return out;
-}
-
-// ticks (reused)
-let ticksHTML='';
-for(let h=WS+1;h<WE;h++)
-  ticksHTML+=`<div class="tick${h%3===0?' tick3':''}" style="left:${p(h)}"></div>`;
-
-// axis (reused)
-const axisHours=[];
-for(let h=WS;h<=WE;h+=2) axisHours.push(h);
-let axisHTML='';
-axisHours.forEach((h,i)=>{
-  let extra='';
-  if(i===0) extra=' style="transform:translateX(0)"';
-  else if(i===axisHours.length-1) extra=' style="transform:translateX(-100%)"';
-  axisHTML+=`<span class="hlabel"${extra} style="left:${p(h)}">${h}:00</span>`;
-});
-
-// ── TOOLTIP — smart position so it never goes off-screen ─────────────────────
-const tt = document.getElementById('tt');
-let ttVisible = false;
-
-function showTip(label, triggerEl) {
-  tt.textContent = label;
-  tt.style.display = 'block';
-  ttVisible = true;
-
-  // position below the bar element, left-aligned to it but clamped to viewport
-  const rect = triggerEl.getBoundingClientRect();
-  const GAP = 6;
-  const TW = tt.offsetWidth;
-  const VW = window.innerWidth;
-
-  let left = rect.left;
-  let top  = rect.bottom + GAP + window.scrollY;
-
-  // clamp so tooltip doesn't overflow right edge
-  if (left + TW + 8 > VW) left = VW - TW - 8;
-  if (left < 8) left = 8;
-
-  tt.style.left = left + 'px';
-  tt.style.top  = top  + 'px';
-  tt.style.position = 'absolute'; // use absolute so scrollY works
-}
-
-function hideTip() {
-  tt.style.display = 'none';
-  ttVisible = false;
-}
-
-// hide on any scroll or outside tap
-document.addEventListener('scroll', hideTip, { passive: true });
-document.addEventListener('touchstart', (e) => {
-  if (!e.target.classList.contains('busy')) hideTip();
-}, { passive: true });
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-const main = document.getElementById('main');
-let html = '';
-
-for (const d of DAYS) {
-  html += `<div class="day-section">
-    <div class="day-heading">
-      <span class="day-short">${d.short}</span>
-      <span class="day-full">${d.full}</span>
-    </div>`;
-
-  for (const r of ROOMS) {
-    const busy = DATA[r.key][d.key] || [];
-    const free = getFree(busy);
-
-    let segs = ticksHTML;
-    for (const [s,e] of free)
-      segs += `<div class="fseg" style="left:${p(s)};width:${w(s,e)}"></div>`;
-    for (const [s,e,name] of busy) {
-      const timeStr = `${fmt(s)} – ${fmt(e)}`;
-      const label = name
-        ? `${r.label}  ·  ${timeStr}  ·  ${name}`
-        : `${r.label}  ·  ${timeStr}`;
-      segs += `<div class="busy" style="left:${p(s)};width:${w(s,e)}"
-        onmouseenter="showTip('${label}',this)"
-        onmouseleave="hideTip()"
-        ontouchstart="showTip('${label}',this);event.stopPropagation()"></div>`;
-    }
-
-    html += `<div class="row">
-      <div class="rlabel">${r.label}</div>
-      <div class="bar">${segs}</div>
-    </div>`;
+  async function sha256(msg) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
 
-  html += `<div class="axis-row">
-    <div></div>
-    <div class="axis">${axisHTML}</div>
-  </div></div>`;
-}
+  async function login() {
+    const pwd = document.getElementById('pwd').value;
+    if (!pwd) return;
+    const hash = await sha256(pwd);
+    if (hash === PASS_HASH) {
+      sessionStorage.setItem('sckm_ok','1');
+      showApp(APP_URL);
+    } else {
+      const err = document.getElementById('err');
+      err.classList.remove('hide');
+      document.getElementById('pwd').value = '';
+      document.getElementById('pwd').focus();
+      setTimeout(()=>err.classList.add('hide'), 3000);
+    }
+  }
 
-main.innerHTML = html;
-document.getElementById('fdate').textContent =
-  'Aktualizacja: ' + new Date().toLocaleDateString('pl-PL', {day:'2-digit', month:'long', year:'numeric'});
+  function goPublic() {
+    sessionStorage.removeItem('sckm_ok');
+    // Parametr ?public=1 możesz w przyszłości obsłużyć w Apps Script
+    // żeby ukryć nazwiska — na razie oba tryby ładują tę samą aplikację
+    showApp(APP_URL + '?public=1');
+  }
+
+  function showApp(url) {
+    document.getElementById('frame').src = url;
+    document.getElementById('auth').classList.add('hide');
+    document.getElementById('frame-wrap').classList.add('show');
+  }
+
+  window.onload = () => {
+    if (sessionStorage.getItem('sckm_ok') === '1') showApp(APP_URL);
+  };
 </script>
 </body>
 </html>
