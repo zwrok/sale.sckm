@@ -15,7 +15,12 @@
       font-family:'Syne',sans-serif; overscroll-behavior:none; }
     #frame-wrap { display:none; position:fixed; inset:0; }
     #frame-wrap.show { display:block; }
-    iframe { width:100%; height:100%; border:none; display:block; }
+    iframe {
+      width:100%; height:100%; border:none; display:block;
+      /* Fix podwójnego kliknięcia na iOS/Android */
+      pointer-events:auto;
+      touch-action:auto;
+    }
 
     /* Ekran logowania */
     #auth { position:fixed; inset:0; display:flex; flex-direction:column;
@@ -89,7 +94,7 @@
   // ══════════════════════════════════════════════
 
   // 1. Wklej URL swojego Apps Script Web App:
-  const APP_URL = 'https://script.google.com/macros/s/AKfycbwctvTdK8QpCbgOn0XnxDf441luXFrcpmbXy_9x04lNytCD8vQhCB_Hu8YN0QezF6FKfA/exec';
+  const APP_URL = 'WKLEJ_TUTAJ_URL_APPS_SCRIPT';
 
   // 2. Hash SHA-256 hasła. Domyślne: sckm2026
   //    Zmień na: https://emn178.github.io/online-tools/sha256.html
@@ -125,17 +130,19 @@
 
   function showApp(isPublic) {
     const frame = document.getElementById('frame');
-    // Przekazujemy tryb przez URL parametr
     frame.src = APP_URL + (isPublic ? '?mode=public' : '');
     document.getElementById('auth').classList.add('hide');
     document.getElementById('frame-wrap').classList.add('show');
 
-    // Gdy iframe się załaduje, wyślij wiadomość z trybem
+    // Gdy iframe się załaduje — wyślij tryb i nadaj focus
     frame.onload = () => {
+      // Tryb publiczny/pracownik
       frame.contentWindow.postMessage(
         { type: 'sckm_mode', public: isPublic },
         '*'
       );
+      // Focus na iframe — eliminuje konieczność podwójnego kliknięcia
+      frame.focus();
     };
   }
 
